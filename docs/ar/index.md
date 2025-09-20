@@ -1,6 +1,25 @@
-# Saudi Regions Widget (Python)
+# توثيق مكتبة Saudi Regions Widget (Python)
 
-مكتبة Python توفر واجهة برمجية سهلة الاستخدام للوصول إلى بيانات المناطق والمدن والأحياء في المملكة العربية السعودية. هذه المكتبة هي تحويل لمكتبة JavaScript الأصلية [YounisDany/saudi-regions-widget](https://github.com/YounisDany/saudi-regions-widget).
+مرحباً بك في توثيق مكتبة `saudi-regions-widget-py`، وهي مكتبة Python قوية وسهلة الاستخدام مصممة لتوفير وصول مبسط إلى بيانات المناطق والمدن والأحياء في المملكة العربية السعودية.
+
+هذه المكتبة هي تحويل لمكتبة JavaScript الأصلية [YounisDany/saudi-regions-widget](https://github.com/YounisDany/saudi-regions-widget)، وتهدف إلى تمكين مطوري Python من دمج البيانات الجغرافية السعودية بسهولة في تطبيقاتهم.
+
+## جدول المحتويات
+
+1.  [الميزات الرئيسية](#الميزات-الرئيسية)
+2.  [التثبيت](#التثبيت)
+3.  [الاستخدام](#الاستخدام)
+    *   [التهيئة](#التهيئة)
+    *   [الحصول على المناطق](#الحصول-على-المناطق)
+    *   [الحصول على المدن](#الحصول-على-المدن)
+    *   [الحصول على الأحياء](#الحصول-على-الأحياء-يتطلب-data_levelcomplete)
+    *   [البحث](#البحث)
+    *   [تغيير اللغة](#تغيير-اللغة)
+4.  [مرجع API](#مرجع-api)
+5.  [المساهمة](#المساهمة)
+6.  [الترخيص](#الترخيص)
+7.  [المؤلف](#المؤلف)
+8.  [English Documentation](https://github.com/YounisDany/saudi-regions-widget-py/blob/master/docs/en/index.md)
 
 ## الميزات الرئيسية
 
@@ -55,7 +74,7 @@ if riyadh_region:
 يمكنك الحصول على جميع المدن، أو المدن التابعة لمنطقة معينة، أو مدينة محددة بواسطة معرفها.
 
 ```python
-# الحصول على جميع المدن (متاحة فقط إذا كان data_level هو 'regions-cities' أو 'complete')
+# الحصول على جميع المدن (متاحة فقط إذا كان data_level هو \'regions-cities\' أو \'complete\')
 cities = regions_data.get_cities()
 # print("\nجميع المدن:")
 # for city in cities:
@@ -122,13 +141,72 @@ if riyadh_region_en:
     print(f"\nمنطقة الرياض (باللغة الإنجليزية): {riyadh_region_en.name_en}")
 ```
 
+## مرجع API
+
+### `class SaudiRegions(data_level='regions-cities', language='ar', data_url=None)`
+
+الفئة الرئيسية للمكتبة.
+
+**المعاملات:**
+
+*   `data_level` (str): مستوى البيانات المراد تحميلها. يمكن أن يكون `regions`، `regions-cities`، أو `complete`. الافتراضي هو `regions-cities`.
+*   `language` (str): اللغة الافتراضية للأسماء. يمكن أن تكون `ar` (العربية) أو `en` (الإنجليزية). الافتراضي هو `ar`.
+*   `data_url` (str, اختياري): عنوان URL مخصص لتحميل البيانات منه. إذا لم يتم تحديده، سيتم استخدام CDN الافتراضي.
+
+### `get_regions() -> List[Region]`
+
+إرجاع قائمة بجميع كائنات `Region` المحملة.
+
+### `get_region_by_id(region_id: str) -> Optional[Region]`
+
+إرجاع كائن `Region` المطابق للمعرف المحدد، أو `None` إذا لم يتم العثور عليه.
+
+### `get_cities(region_id: Optional[str] = None) -> List[City]`
+
+إرجاع قائمة بجميع كائنات `City` المحملة. إذا تم توفير `region_id`، فسيتم إرجاع المدن التابعة لتلك المنطقة فقط.
+
+### `get_city_by_id(city_id: str) -> Optional[City]`
+
+إرجاع كائن `City` المطابق للمعرف المحدد، أو `None` إذا لم يتم العثور عليه.
+
+### `get_districts(city_id: Optional[str] = None, region_id: Optional[str] = None) -> List[District]`
+
+إرجاع قائمة بجميع كائنات `District` المحملة. يتطلب `data_level="complete"`.
+إذا تم توفير `city_id`، فسيتم إرجاع الأحياء التابعة لتلك المدينة فقط.
+إذا تم توفير `region_id`، فسيتم إرجاع الأحياء التابعة لتلك المنطقة فقط.
+
+### `get_district_by_id(district_id: str) -> Optional[District]`
+
+إرجاع كائن `District` المطابق للمعرف المحدد، أو `None` إذا لم يتم العثور عليه. يتطلب `data_level="complete"`.
+
+### `search(query: str, search_type: str = 'all') -> List[Dict[str, Union[str, Region, City, District]]]`
+
+البحث عن المناطق أو المدن أو الأحياء بناءً على استعلام نصي.
+
+**المعاملات:**
+
+*   `query` (str): سلسلة البحث.
+*   `search_type` (str): نوع الكيانات المراد البحث فيها. يمكن أن يكون `all` (الافتراضي)، `regions`، `cities`، أو `districts`.
+
+**الإرجاع:**
+
+قائمة بالقواميس، حيث يحتوي كل قاموس على مفتاح `type` (يشير إلى نوع الكيان) ومفتاح `data` (يحتوي على كائن `Region` أو `City` أو `District`).
+
+### `set_language(language: str)`
+
+تغيير اللغة الافتراضية للمكتبة (`ar` أو `en`).
+
+### `get_version() -> str`
+
+إرجاع رقم إصدار المكتبة.
+
 ## المساهمة
 
-المساهمات مرحب بها! يرجى قراءة [CONTRIBUTING.md](CONTRIBUTING.md) لمزيد من التفاصيل.
+المساهمات مرحب بها! يرجى قراءة [CONTRIBUTING.md](https://github.com/YounisDany/saudi-regions-widget-py/blob/master/CONTRIBUTING.md) لمزيد من التفاصيل.
 
 ## الترخيص
 
-هذا المشروع مرخص بموجب ترخيص MIT. انظر ملف [LICENSE](LICENSE) لمزيد من التفاصيل.
+هذا المشروع مرخص بموجب ترخيص MIT. انظر ملف [LICENSE](https://github.com/YounisDany/saudi-regions-widget-py/blob/master/LICENSE) لمزيد من التفاصيل.
 
 ## المؤلف
 
